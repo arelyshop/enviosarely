@@ -129,15 +129,15 @@
                     <div id="label-preview" class="printable-area aspect-[16/9] w-full max-w-sm border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-white transition-all duration-300 overflow-hidden transform -rotate-90">
                         <!-- Wrapper con contenido -->
                         <div class="w-full h-full flex flex-col p-4">
-                            <!-- Contenido de la etiqueta se actualiza aquí: Usamos flex-col para forzar el layout vertical en TODOS los dispositivos -->
-                            <div class="text-center w-full flex-grow flex flex-col justify-around items-center gap-1">
-                                <p class="text-3xl border-2 border-gray-800 rounded-lg text-center py-1">
+                            <!-- Contenido de la etiqueta se actualiza aquí: justify-center agrupa los elementos en el medio -->
+                            <div class="text-center w-full flex-grow flex flex-col justify-center items-center gap-2">
+                                <p class="text-2xl border-2 border-gray-800 rounded-lg text-center px-2">
                                     <span id="preview-nombre" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
-                                <p class="text-3xl">
+                                <p class="text-2xl overflow-hidden">
                                     <strong class="font-black text-gray-700">DESTINO:</strong> <span id="preview-destino" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
-                                <p class="text-3xl">
+                                <p class="text-2xl overflow-hidden">
                                     <strong class="font-black text-gray-700">CELULAR:</strong> <span id="preview-celular" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
                             </div>
@@ -171,6 +171,32 @@
             nombrePreview.textContent = (nombreInput.value || '...').toUpperCase();
             destinoPreview.textContent = (destinoInput.value || '...').toUpperCase();
             celularPreview.textContent = (celularInput.value || '...').toUpperCase();
+
+            // Helper function to shrink text if it overflows its container
+            const fitText = (container) => {
+                // First, reset styles to the default from CSS
+                container.style.fontSize = '';
+                container.style.whiteSpace = 'normal';
+                
+                const defaultFontSize = parseFloat(window.getComputedStyle(container).fontSize);
+
+                // Check if content width is greater than container width
+                if (container.scrollWidth > container.clientWidth) {
+                    // If it overflows, prevent line breaks and start shrinking
+                    container.style.whiteSpace = 'nowrap';
+                    
+                    let currentFontSize = defaultFontSize;
+                    // Loop to reduce font size until it fits or reaches a minimum
+                    while (container.scrollWidth > container.clientWidth && currentFontSize > 10) {
+                        currentFontSize--;
+                        container.style.fontSize = `${currentFontSize}px`;
+                    }
+                }
+            };
+
+            // Apply the function to the parent paragraphs of destino and celular
+            fitText(destinoPreview.parentElement);
+            fitText(celularPreview.parentElement);
         }
 
         // Añadir listeners para actualizar en tiempo real
@@ -237,6 +263,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
