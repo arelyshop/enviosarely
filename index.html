@@ -63,9 +63,18 @@
             /* Se quitan las restricciones de tamaño de la vista normal */
             max-width: none !important;
             max-height: none !important;
-            border-radius: 0 !important;
-            border: none !important;
+            /* Se eliminan los estilos que quitaban el borde para que se vea igual a la vista previa */
             cursor: pointer !important; /* Indica que se puede hacer clic para cerrar */
+        }
+
+        /* Aumenta el tamaño del texto PROPORCIONALMENTE en la vista completa */
+        #label-preview.fullscreen-view .dynamic-text {
+            /* Usa clamp(min, preferred, max) con viewport height (vh) para escalar el texto */
+            font-size: clamp(24px, 6vh, 60px) !important;
+            line-height: 1.1 !important;
+        }
+        #label-preview.fullscreen-view #label-footer {
+            font-size: clamp(16px, 3vh, 30px) !important;
         }
     </style>
 </head>
@@ -131,13 +140,13 @@
                         <div class="w-full h-full flex flex-col p-4">
                             <!-- Contenido de la etiqueta se actualiza aquí: se reduce el 'gap' para juntar los elementos -->
                             <div class="text-center w-full flex-grow flex flex-col justify-center items-center gap-1">
-                                <p class="text-2xl border-2 border-gray-800 rounded-lg text-center px-2">
+                                <p class="text-2xl border-2 border-gray-800 rounded-lg text-center px-2 dynamic-text">
                                     <span id="preview-nombre" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
-                                <p class="text-2xl overflow-hidden">
+                                <p class="text-2xl overflow-hidden dynamic-text">
                                     <strong class="font-black text-gray-700">DESTINO:</strong> <span id="preview-destino" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
-                                <p class="text-2xl overflow-hidden">
+                                <p class="text-2xl overflow-hidden dynamic-text">
                                     <strong class="font-black text-gray-700">CELULAR:</strong> <span id="preview-celular" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
                             </div>
