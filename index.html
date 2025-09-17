@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Etiquetas - Arelyshop</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bibliotecas para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados y para la impresión */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Oculta los controles y solo muestra la etiqueta al imprimir */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .printable-area, .printable-area * {
+                visibility: visible;
+            }
+            .printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 3in; /* Ancho para impresora térmica */
+                height: 4in; /* Alto para impresora térmica */
+                margin: 0;
+                padding: 0; /* Se quita padding para que el contenedor rotado ocupe todo el espacio */
+                border: 1px solid #000;
+                box-shadow: none;
+                font-size: 14pt; /* Tamaño de fuente adecuado para impresión */
+            }
+            .no-print {
+                display: none;
+            }
+            #label-footer {
+                font-size: 10pt; /* Fuente más pequeña para el pie de página */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
+
+    <main class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-4xl no-print">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">DATOS DEL CLIENTE</h1>
+            <p class="text-gray-500 mt-2">Completa los campos para crear tu etiqueta personalizada.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <!-- Sección de Controles (Formulario) -->
+            <div class="space-y-6">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre:</label>
+                    <input type="text" id="nombre" placeholder="Ej: Juan Pérez" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="destino" class="block text-sm font-medium text-gray-700 mb-1">Destino:</label>
+                    <!-- Input con datalist para sugerencias y entrada manual -->
+                    <input list="ciudades" id="destino" name="destino" placeholder="Selecciona o escribe un destino" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    <datalist id="ciudades">
+                        <option value="Tarija">
+                        <option value="Cochabamba">
+                        <option value="La Paz">
+                        <option value="Beni">
+                        <option value="Sucre">
+                        <option value="Oruro">
+                        <option value="Pando">
+                        <option value="Potosí">
+                        <option value="Santa Cruz">
+                        <option value="El Alto">
+                    </datalist>
+                </div>
+                <div>
+                    <label for="celular" class="block text-sm font-medium text-gray-700 mb-1">Celular:</label>
+                    <input type="text" id="celular" placeholder="Ej: 71234567" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <!-- Botones de Acción -->
+                 <div class="space-y-4 pt-4">
+                    <button id="print-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-transform transform hover:scale-105">
+                        Imprimir Etiqueta
+                    </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button id="pdf-button" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition">
+                            Descargar PDF
+                        </button>
+                        <button id="fullscreen-button" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 transition">
+                            Ver Completa
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Vista Previa -->
+            <div>
+                <h2 class="text-xl font-semibold text-center mb-4 text-gray-700">Vista Previa</h2>
+                <div id="label-preview" class="printable-area aspect-[3/4] w-full max-w-sm mx-auto border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-white transition-all duration-300 overflow-hidden">
+                    <!-- Wrapper for rotation -->
+                    <div class="w-[133.33%] h-[75%] transform -rotate-90 p-6 flex flex-col justify-between">
+                        <!-- Contenido de la etiqueta se actualiza aquí -->
+                        <div class="space-y-3">
+                            <p class="text-xl"><strong class="font-semibold text-gray-600">Nombre:</strong> <span id="preview-nombre" class="text-gray-800 font-medium break-words"></span></p>
+                            <p class="text-xl"><strong class="font-semibold text-gray-600">Destino:</strong> <span id="preview-destino" class="text-gray-800 font-medium break-words"></span></p>
+                            <p class="text-xl"><strong class="font-semibold text-gray-600">Celular:</strong> <span id="preview-celular" class="text-gray-800 font-medium break-words"></span></p>
+                        </div>
+                        <!-- Pie de página de la etiqueta -->
+                        <div id="label-footer" class="text-center text-base text-gray-500 font-mono">
+                            Arelyshop.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Obtener referencias a los elementos del DOM
+        const nombreInput = document.getElementById('nombre');
+        const destinoInput = document.getElementById('destino');
+        const celularInput = document.getElementById('celular');
+        const printButton = document.getElementById('print-button');
+        const pdfButton = document.getElementById('pdf-button');
+        const fullscreenButton = document.getElementById('fullscreen-button');
+        const labelPreview = document.getElementById('label-preview');
+
+        const nombrePreview = document.getElementById('preview-nombre');
+        const destinoPreview = document.getElementById('preview-destino');
+        const celularPreview = document.getElementById('preview-celular');
+
+        // Función para actualizar la vista previa
+        function updatePreview() {
+            nombrePreview.textContent = nombreInput.value || '...';
+            destinoPreview.textContent = destinoInput.value || '...';
+            celularPreview.textContent = celularInput.value || '...';
+        }
+
+        // Añadir listeners para actualizar en tiempo real
+        nombreInput.addEventListener('input', updatePreview);
+        destinoInput.addEventListener('input', updatePreview);
+        celularInput.addEventListener('input', updatePreview);
+
+        // Listener para el botón de imprimir
+        printButton.addEventListener('click', () => {
+            if (!nombreInput.value && !destinoInput.value && !celularInput.value) {
+                printButton.textContent = 'Por favor, llena al menos un campo';
+                printButton.classList.add('bg-red-500', 'hover:bg-red-600');
+                setTimeout(() => {
+                    printButton.textContent = 'Imprimir Etiqueta';
+                    printButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+                }, 2500);
+            } else {
+                 window.print();
+            }
+        });
+
+        // Listener para el botón de pantalla completa
+        fullscreenButton.addEventListener('click', () => {
+            if (labelPreview.requestFullscreen) {
+                labelPreview.requestFullscreen();
+            } else if (labelPreview.webkitRequestFullscreen) { /* Safari */
+                labelPreview.webkitRequestFullscreen();
+            } else if (labelPreview.msRequestFullscreen) { /* IE11 */
+                labelPreview.msRequestFullscreen();
+            }
+        });
+
+        // Listener para el botón de descargar PDF
+        pdfButton.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+
+            // Usar html2canvas para capturar el div de la vista previa
+            html2canvas(labelPreview, {
+                scale: 3, // Aumentar la escala para mejor resolución en el PDF
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Crear un nuevo PDF con las dimensiones de la etiqueta (3x4 pulgadas)
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'in',
+                    format: [3, 4]
+                });
+
+                // Añadir la imagen capturada al PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, 3, 4);
+                
+                // Guardar el archivo PDF
+                pdf.save('etiqueta-arelyshop.pdf');
+            });
+        });
+
+        // Inicializar la vista previa al cargar la página
+        updatePreview();
+    </script>
+</body>
+</html>
+
