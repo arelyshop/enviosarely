@@ -51,8 +51,8 @@
             position: fixed !important;
             top: 50% !important;
             left: 50% !important;
-            /* Se centra y se asegura que la rotación se mantenga */
-            transform: translate(-50%, -50%) rotate(90deg) !important;
+            /* Se centra y se asegura que la rotación se mantenga en -90 grados */
+            transform: translate(-50%, -50%) rotate(-90deg) !important;
             z-index: 50;
             
             /* El ancho del elemento se convierte en la altura visual después de rotar.
@@ -126,11 +126,11 @@
                 <h2 class="text-xl font-semibold text-center mb-4 text-gray-700">Vista Previa</h2>
                 <!-- Contenedor para dar espacio al elemento rotado -->
                 <div class="w-full flex justify-center items-center h-96">
-                    <div id="label-preview" class="printable-area aspect-[16/9] w-full max-w-sm border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-white transition-all duration-300 overflow-hidden transform rotate-90">
+                    <div id="label-preview" class="printable-area aspect-[16/9] w-full max-w-sm border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-white transition-all duration-300 overflow-hidden transform -rotate-90">
                         <!-- Wrapper con contenido -->
                         <div class="w-full h-full flex flex-col p-4">
-                            <!-- Contenido de la etiqueta se actualiza aquí -->
-                            <div class="text-center w-full flex-grow flex flex-col justify-around">
+                            <!-- Contenido de la etiqueta se actualiza aquí: Usamos flex-col para forzar el layout vertical en TODOS los dispositivos -->
+                            <div class="text-center w-full flex-grow flex flex-col justify-around items-center gap-1">
                                 <p class="text-3xl border-2 border-gray-800 rounded-lg text-center py-1">
                                     <span id="preview-nombre" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
@@ -237,6 +237,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
