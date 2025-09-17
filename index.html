@@ -49,17 +49,23 @@
         /* Clase para la vista de pantalla completa simulada */
         .fullscreen-view {
             position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100vw !important;
-            height: 100vh !important;
-            transform: none !important; /* Reset transform */
+            top: 50% !important;
+            left: 50% !important;
+            /* Se centra y se asegura que la rotación se mantenga */
+            transform: translate(-50%, -50%) rotate(90deg) !important;
             z-index: 50;
+            
+            /* El ancho del elemento se convierte en la altura visual después de rotar.
+               Lo ajustamos a la altura del viewport para que quepa en la pantalla. */
+            width: 95vh !important; 
+            height: auto !important; /* La altura se ajusta automáticamente por el aspect-ratio */
+
+            /* Se quitan las restricciones de tamaño de la vista normal */
             max-width: none !important;
             max-height: none !important;
             border-radius: 0 !important;
             border: none !important;
-            cursor: pointer !important; /* Hint to click to close */
+            cursor: pointer !important; /* Indica que se puede hacer clic para cerrar */
         }
     </style>
 </head>
@@ -231,5 +237,6 @@
     </script>
 </body>
 </html>
+
 
 
