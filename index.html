@@ -129,8 +129,8 @@
                     <div id="label-preview" class="printable-area aspect-[16/9] w-full max-w-sm border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-white transition-all duration-300 overflow-hidden transform -rotate-90">
                         <!-- Wrapper con contenido -->
                         <div class="w-full h-full flex flex-col p-4">
-                            <!-- Contenido de la etiqueta se actualiza aquí: justify-center agrupa los elementos en el medio -->
-                            <div class="text-center w-full flex-grow flex flex-col justify-center items-center gap-2">
+                            <!-- Contenido de la etiqueta se actualiza aquí: se reduce el 'gap' para juntar los elementos -->
+                            <div class="text-center w-full flex-grow flex flex-col justify-center items-center gap-1">
                                 <p class="text-2xl border-2 border-gray-800 rounded-lg text-center px-2">
                                     <span id="preview-nombre" class="text-gray-900 font-black break-words leading-tight"></span>
                                 </p>
@@ -263,11 +263,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
 
